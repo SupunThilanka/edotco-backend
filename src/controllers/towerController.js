@@ -17,17 +17,21 @@ exports.createTower = async (req, res) => {
   try {
     await client.query('BEGIN');
 
-    const insertTowerQuery = 'INSERT INTO tower_created (latitude, longitude) VALUES ($1, $2) RETURNING tower_Id';
-    const towerResult = await client.query(insertTowerQuery, [latitude, longitude]);
-    const newTowerId = towerResult.rows[0].tower_Id;
+    // Insert new tower into the tower_created table
+    const insertTowerQuery = 'INSERT INTO tower_created (longitude, latitude, tower_id) VALUES ($1, $2, $3) RETURNING creation_id';
+    const towerResult = await client.query(insertTowerQuery, [longitude, latitude, towerType]);
 
-    const insertEquipmentQuery = 'INSERT INTO tower_equipment (tower_Id, equipment_Id) VALUES ($1, $2)';
+    const newCreationId = towerResult.rows[0].creation_id;
+    console.log('New tower created with ID:', newCreationId);
+
+    // Insert equipment details into the tower_equipment table
+    const insertEquipmentQuery = 'INSERT INTO tower_equipment (creation_id, equipment_id) VALUES ($1, $2)';
     for (const equipmentId of equipments) {
-      await client.query(insertEquipmentQuery, [newTowerId, equipmentId]);
+      await client.query(insertEquipmentQuery, [newCreationId, equipmentId]);
     }
 
     await client.query('COMMIT');
-    res.status(201).json({ tower_Id: newTowerId });
+    res.status(201).json({ creation_id: newCreationId });
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('Error creating tower:', error.stack);
