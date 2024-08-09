@@ -1,8 +1,9 @@
 const express = require('express');
-const { getTowerTypes, createTower } = require('../controllers/towerController');
 const router = express.Router();
+const towerController = require('../controllers/towerController');
 
-router.get('/tower-types', getTowerTypes);
-router.post('/towers', createTower);
+router.get('/towers', towerController.getAllTowers); // Add this line
+router.get('/tower-types', towerController.getTowerTypes);
+router.post('/towers', towerController.createTower);
 
 module.exports = router;

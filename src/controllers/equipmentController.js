@@ -9,3 +9,13 @@ exports.getEquipments = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getAllEquipments = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM tower_equipment');
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching towers:', error.stack);
+    res.status(500).json({ error: error.message });
+  }
+};

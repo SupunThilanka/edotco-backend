@@ -11,6 +11,16 @@ exports.getTowerTypes = async (req, res) => {
   }
 };
 
+exports.getAllTowers = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM tower_created');
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching towers:', error.stack);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.createTower = async (req, res) => {
   const { towerType, name, latitude, longitude, equipment_Ids, equipment_names, height } = req.body;
 
