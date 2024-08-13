@@ -78,11 +78,14 @@ exports.createTower = async (req, res) => {
       await client.query(insertEquipmentQuery, [newCreationId, equipmentId]);
     }
 
+    const tower_name = `tower_${newCreationId}`;
+
     await client.query('COMMIT');
     
     //Kafka message
     const towerData = {
       creationId: newCreationId,
+      name: tower_name,
       tower_type: name,
       latitude,
       longitude,
@@ -139,9 +142,12 @@ exports.updateTower = async (req, res) => {
 
     await client.query('COMMIT');
 
+    const tower_name = `tower_${creationId}`;
+    
     //Kafka message
     const towerData = {
       creationId,
+      name: tower_name,
       tower_type: name,
       latitude,
       longitude,
