@@ -82,13 +82,13 @@ exports.createTower = async (req, res) => {
     
     //Kafka message
     const towerData = {
-      name,
+      creationId: newCreationId,
+      tower_type: name,
       latitude,
       longitude,
-      equipment_names,
-      creationId: newCreationId,
       height,
-      status
+      status,
+      equipment_names
     };
     await sendMessage(towerData);
     console.log('Tower creation data sent to Kafka');
@@ -122,8 +122,8 @@ exports.updateTower = async (req, res) => {
     `;
     const towerResult = await client.query(updateTowerQuery, [longitude, latitude, towerType, height, id]);
 
-    const newCreationId = towerResult.rows[0].creation_id;
-    console.log('New tower created with ID:', newCreationId);
+    const creationId = towerResult.rows[0].creation_id;
+    console.log('New tower created with ID:', creationId);
 
     console.log('Tower updated:', { id, longitude, latitude, towerType, height });
 
@@ -141,13 +141,13 @@ exports.updateTower = async (req, res) => {
 
     //Kafka message
     const towerData = {
-      name,
+      creationId,
+      tower_type: name,
       latitude,
       longitude,
-      equipment_names,
-      creationId: newCreationId,
       height,
-      status
+      status,
+      equipment_names
     };
     await sendMessage(towerData);
     console.log('Tower updated data sent to Kafka');
