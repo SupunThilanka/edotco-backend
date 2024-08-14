@@ -4,7 +4,7 @@ const { sendMessage } = require('../kafkaProducer');
 exports.SendAllToKafka = async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT tc.creation_id, tt.name as tower_type, tc.latitude, tc.longitude, tc.height, tc.status, 
+      SELECT tc.creation_id, tc.name as tower_name, tc.latitude, tc.longitude, tc.height, tc.status, 
              array_agg(e.name) as equipment_names
       FROM tower_created tc
       JOIN tower_type tt ON tc.tower_id = tt.tower_id
