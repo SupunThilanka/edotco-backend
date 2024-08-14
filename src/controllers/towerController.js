@@ -73,20 +73,27 @@ exports.createTower = async (req, res) => {
     const newCreationId = towerResult.rows[0].creation_id;
     console.log('New tower created with ID:', newCreationId);
 
+    // Replace spaces in towerType with underscores
+    const formattedName = name.replace(/ /g, '_');
+
+    // Create the name by concatenating formatted tower type and creation id
+    const createdName = `${formattedName}_${newCreationId}`;
+
+    // Insert the name into the tower_created table
+    const updateTowerNameQuery = 'UPDATE tower_created SET name = $1 WHERE creation_id = $2';
+    await client.query(updateTowerNameQuery, [createdName, newCreationId]);
+
     const insertEquipmentQuery = 'INSERT INTO tower_equipment (creation_id, equipment_id) VALUES ($1, $2)';
     for (const equipmentId of equipment_Ids) {
       await client.query(insertEquipmentQuery, [newCreationId, equipmentId]);
     }
-
-    const tower_name = `tower_${newCreationId}`;
 
     await client.query('COMMIT');
     
     //Kafka message
     const towerData = {
       creationId: newCreationId,
-      name: tower_name,
-      tower_type: name,
+      tower_name: createdName,
       latitude,
       longitude,
       height,
@@ -125,8 +132,19 @@ exports.updateTower = async (req, res) => {
     `;
     const towerResult = await client.query(updateTowerQuery, [longitude, latitude, towerType, height, id]);
 
-    const creationId = towerResult.rows[0].creation_id;
-    console.log('New tower created with ID:', creationId);
+    const CreationId = towerResult.rows[0].creation_id;
+    console.log('New tower created with ID:', CreationId);
+
+    // Replace spaces in towerType with underscores
+    const formattedName = name.replace(/ /g, '_');
+
+    // Create the name by concatenating formatted tower type and creation id
+    const Createdname = `${formattedName}_${CreationId}`;
+
+    // Insert the name into the tower_created table
+    const updateTowerNameQuery = 'UPDATE tower_created SET name = $1 WHERE creation_id = $2';
+    await client.query(updateTowerNameQuery, [Createdname, CreationId]);
+  
 
     console.log('Tower updated:', { id, longitude, latitude, towerType, height });
 
@@ -142,13 +160,10 @@ exports.updateTower = async (req, res) => {
 
     await client.query('COMMIT');
 
-    const tower_name = `tower_${creationId}`;
-    
     //Kafka message
     const towerData = {
-      creationId,
-      name: tower_name,
-      tower_type: name,
+      CreationId,
+      tower_name: Createdname,
       latitude,
       longitude,
       height,
